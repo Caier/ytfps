@@ -1,0 +1,32 @@
+{
+  "name": "youtube-fulllist",
+  "version": "1.0.0",
+  "description": "fetch ALL songs from a youtube playlist",
+  "main": "out/index.js",
+  "type": "commonjs",
+  "types": "out/index.d.ts",
+  "scripts": {
+    "prepublishOnly": "npm run build",
+    "start": "node out/index.js",
+    "build": "tsc",
+    "watch": "tsc --watch",
+    "try": "tsc && npm start"
+  },
+  "author": "caier",
+  "license": "ISC",
+  "devDependencies": {
+    "@types/chai-as-promised": "^7.1.2",
+    "chai": "^4.2.0",
+    "chai-as-promised": "^7.1.1",
+    "mocha": "^7.1.2",
+    "typescript": "^3.8.3"
+  },
+  "dependencies": {
+    "@types/node": "^13.11.0",
+    "axios": "^0.19.2"
+  },
+  "engines": {
+    "npm": "*",
+    "node": "^12.x"
+  }
+}
