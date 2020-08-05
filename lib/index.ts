@@ -14,7 +14,7 @@ const rqOpts: AxiosRequestConfig = {
 const baseURL = 'https://youtube.com';
 
 /**
- * Scraps metadata and all videos from a youtube playlist
+ * Scraps youtube playlist metadata and all its videos
  * @param url URL or ID of the playlist you want to scrap
  */
 async function fetchFromPlaylist(url: string) : Promise<YTPlaylist> {
@@ -35,7 +35,7 @@ async function fetchFromPlaylist(url: string) : Promise<YTPlaylist> {
     if(ytInitialData.alerts)
         throw Error('This playlist is private');
     if(!ytInitialData?.contents?.twoColumnBrowseResultsRenderer?.tabs?.[0]?.tabRenderer?.content?.sectionListRenderer?.contents?.[0]?.itemSectionRenderer?.contents?.[0]?.playlistVideoListRenderer)
-        throw Error('Cannot find valid playlist JSON data');
+        throw Error('Cannot find valid playlist JSON data. Is the playlist ID correct?');
     let listData = ytInitialData.contents.twoColumnBrowseResultsRenderer.tabs[0].tabRenderer.content.sectionListRenderer.contents[0].itemSectionRenderer.contents[0].playlistVideoListRenderer;
     let d = ytInitialData;
     
