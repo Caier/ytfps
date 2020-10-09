@@ -2,7 +2,13 @@
   "name": "ytfps",
   "version": "1.0.0",
   "description": "scraps youtube playlist metadata and all its videos (not limited to 100), does not require API key",
-  "keywords": ["youtube", "playlist", "youtube playlist", "scraper", "yt"],
+  "keywords": [
+    "youtube",
+    "playlist",
+    "youtube playlist",
+    "scraper",
+    "yt"
+  ],
   "repository": {
     "type": "git",
     "url": "https://github.com/Caier/ytfps"

@@ -72,7 +72,7 @@ function parseVideosFromJson(videoDataArray) {
         for (let v of videoDataArray.map(v => v.playlistVideoRenderer))
             try {
                 videos.push({
-                    title: v.title.simpleText,
+                    title: v.title.runs[0].text,
                     url: baseURL + '/watch?v=' + v.videoId,
                     id: v.videoId,
                     length: v.lengthText.simpleText,

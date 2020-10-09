@@ -47,6 +47,7 @@ async function fetchFromPlaylist(url: string) : Promise<YTPlaylist> {
 
     try {
         let mf = d.microformat.microformatDataRenderer;
+        console.log(mf);
         let si0 = d.sidebar.playlistSidebarRenderer.items[0].playlistSidebarPrimaryInfoRenderer;
         let si1 = d.sidebar.playlistSidebarRenderer.items[1].playlistSidebarSecondaryInfoRenderer.videoOwner.videoOwnerRenderer;
         return {
@@ -76,7 +77,7 @@ function parseVideosFromJson(videoDataArray: any[]) : YTvideo[] {
         for(let v of videoDataArray.map(v => v.playlistVideoRenderer))
             try {
                 videos.push({
-                    title: v.title.simpleText,
+                    title: v.title.runs[0].text,
                     url: baseURL + '/watch?v=' + v.videoId,
                     id: v.videoId,
                     length: v.lengthText.simpleText,
