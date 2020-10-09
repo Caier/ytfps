@@ -47,7 +47,6 @@ async function fetchFromPlaylist(url: string) : Promise<YTPlaylist> {
 
     try {
         let mf = d.microformat.microformatDataRenderer;
-        console.log(mf);
         let si0 = d.sidebar.playlistSidebarRenderer.items[0].playlistSidebarPrimaryInfoRenderer;
         let si1 = d.sidebar.playlistSidebarRenderer.items[1].playlistSidebarSecondaryInfoRenderer.videoOwner.videoOwnerRenderer;
         return {
