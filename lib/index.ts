@@ -53,8 +53,8 @@ async function fetchFromPlaylist(url: string) : Promise<YTPlaylist> {
             title: mf.title,
             url: baseURL + '/playlist?list=' + listData.playlistId,
             id: listData.playlistId,
-            video_count: +si0.stats[0].runs[0].text.replace(/[^0-9]/g, ''),
-            view_count: +si0.stats[1].simpleText.replace(/[^0-9]/g, ''),
+            video_count: +si0.stats[0].runs[0]?.text?.replace(/[^0-9]/g, ''),
+            view_count: +si0.stats[1]?.simpleText?.replace(/[^0-9]/g, '') || 0,
             description: mf.description,
             isUnlisted: mf.unlisted,
             thumbnail_url: mf.thumbnail.thumbnails.pop().url.replace(/\?.*/, ''),
@@ -65,8 +65,8 @@ async function fetchFromPlaylist(url: string) : Promise<YTPlaylist> {
             },
             videos: videos
         }
-    } catch {
-        throw Error('Could not parse playlist metadata')
+    } catch(e) {
+        throw Error('Could not parse playlist metadata: ' + e.message);
     }
 }
 
@@ -76,7 +76,7 @@ function parseVideosFromJson(videoDataArray: any[]) : YTvideo[] {
         for(let v of videoDataArray.map(v => v.playlistVideoRenderer))
             try {
                 videos.push({
-                    title: v.title.simpleText,
+                    title: v.title.runs[0].text,
                     url: baseURL + '/watch?v=' + v.videoId,
                     id: v.videoId,
                     length: v.lengthText.simpleText,

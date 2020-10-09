@@ -3,7 +3,7 @@ export interface YTPlaylist {
     url: string;
     id: string;
     video_count: number;
-    view_count: number;
+    view_count?: number;
     description: string;
     isUnlisted: boolean;
     thumbnail_url: string;
