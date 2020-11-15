@@ -27,7 +27,7 @@ async function fetchFromPlaylist(url: string) : Promise<YTPlaylist> {
 
     try {
         let body = (await ax.get('https://youtube.com/playlist?list=' + encodeURI(playlistID), rqOpts)).data as string;
-        ytInitialData = JSON.parse(/window\["ytInitialData"].*?({.*?});/s.exec(body)?.[1] || '{}');
+        ytInitialData = JSON.parse(/window\["ytInitialData"\] =.*?({.*?});/s.exec(body)?.[1] || '{}');
     } catch {
         throw Error('Could not fetch/parse playlist');
     }
@@ -39,9 +39,9 @@ async function fetchFromPlaylist(url: string) : Promise<YTPlaylist> {
     let listData = ytInitialData.contents.twoColumnBrowseResultsRenderer.tabs[0].tabRenderer.content.sectionListRenderer.contents[0].itemSectionRenderer.contents[0].playlistVideoListRenderer;
     let d = ytInitialData;
     
+    let contToken: string = listData?.contents?.slice(-1)?.[0]?.continuationItemRenderer?.continuationEndpoint?.continuationCommand?.token || '';
     if(listData.contents)
         videos.push(...parseVideosFromJson(listData.contents));
-    let contToken: string = listData?.continuations?.[0]?.nextContinuationData?.continuation || '';
     if(contToken)
         videos.push(...(await getAllVideos(contToken)));
 
@@ -99,8 +99,8 @@ function parseVideosFromJson(videoDataArray: any[]) : YTvideo[] {
 async function getAllVideos(ajax_url: string, videos: YTvideo[] = []) : Promise<YTvideo[]> {
     try {
         let ytAppendData = (await ax.get(baseURL + '/browse_ajax?continuation=' + ajax_url, rqOpts)).data;
-        videos.push(...parseVideosFromJson(ytAppendData[1].response.continuationContents.playlistVideoListContinuation.contents));
-        let contToken: string = ytAppendData[1].response.continuationContents.playlistVideoListContinuation?.continuations?.[0]?.nextContinuationData?.continuation;
+        let contToken: any = ytAppendData[1].response?.onResponseReceivedActions?.[0]?.appendContinuationItemsAction?.continuationItems?.slice(-1)?.[0]?.continuationItemRenderer?.continuationEndpoint?.continuationCommand?.token;
+        videos.push(...parseVideosFromJson(ytAppendData[1].response.onResponseReceivedActions[0].appendContinuationItemsAction.continuationItems));
         return contToken ? await getAllVideos(contToken, videos) : videos;
     } catch {
         throw Error('An error has occured while trying to fetch more videos');
