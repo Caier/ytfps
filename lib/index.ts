@@ -27,7 +27,7 @@ async function fetchFromPlaylist(url: string) : Promise<YTPlaylist> {
 
     try {
         let body = (await ax.get('https://youtube.com/playlist?list=' + encodeURI(playlistID), rqOpts)).data as string;
-        ytInitialData = JSON.parse(/window\["ytInitialData"\] =.*?({.*?});/s.exec(body)?.[1] || '{}');
+        ytInitialData = JSON.parse(/(?:window\["ytInitialData"\])|(?:ytInitialData) =.*?({.*?});/s.exec(body)?.[1] || '{}');
     } catch {
         throw Error('Could not fetch/parse playlist');
     }

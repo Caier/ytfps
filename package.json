@@ -1,6 +1,6 @@
 {
   "name": "ytfps",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "scraps youtube playlist metadata and all its videos (not limited to 100), does not require API key",
   "keywords": ["youtube", "playlist", "youtube playlist", "scraper", "yt"],
   "repository": {

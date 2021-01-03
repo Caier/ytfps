@@ -20,8 +20,8 @@ describe("ytfps", function() {
             expect(playlist[prop]).to.deep.eq(properResult[prop]);
     });
 
-    it('should scrap >100 videos', async () => {
-        expect((await ytfps(top500Playlist)).videos.length).to.be.gt(100);
+    it('should scrap >200 videos', async () => {
+        expect((await ytfps(top500Playlist)).videos.length).to.be.gt(200);
     });
 
     it('should throw private playlist error', async () => {
