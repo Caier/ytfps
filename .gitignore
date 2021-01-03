@@ -96,3 +96,5 @@ typings/
 
 # fuck package lock
 package-lock.json
+
+out/
