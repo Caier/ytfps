@@ -11,7 +11,8 @@ const rqOpts: AxiosRequestConfig = {
     }
 }
 
-const baseURL = 'https://youtube.com';
+const baseURL = 'https://www.youtube.com';
+let iAPIkey = '';
 
 /**
  * Scraps youtube playlist metadata and all its videos
@@ -27,13 +28,16 @@ async function fetchFromPlaylist(url: string) : Promise<YTPlaylist> {
 
     try {
         let body = (await ax.get('https://youtube.com/playlist?list=' + encodeURI(playlistID), rqOpts)).data as string;
+        iAPIkey = /"INNERTUBE_API_KEY":"(.*?)"/.exec(body)?.[1] as string;
         ytInitialData = JSON.parse(/(?:window\["ytInitialData"\])|(?:ytInitialData) =.*?({.*?});/s.exec(body)?.[1] || '{}');
     } catch {
         throw Error('Could not fetch/parse playlist');
     }
 
-    if(ytInitialData.alerts)
-        throw Error('This playlist is private');
+    if(!iAPIkey)
+        throw Error('Could not extract internal API key');
+    if(JSON.stringify(ytInitialData.alerts)?.includes("ERROR"))
+        throw Error('This playlist is private or broken');
     if(!ytInitialData?.contents?.twoColumnBrowseResultsRenderer?.tabs?.[0]?.tabRenderer?.content?.sectionListRenderer?.contents?.[0]?.itemSectionRenderer?.contents?.[0]?.playlistVideoListRenderer)
         throw Error('Cannot find valid playlist JSON data. Is the playlist ID correct?');
     let listData = ytInitialData.contents.twoColumnBrowseResultsRenderer.tabs[0].tabRenderer.content.sectionListRenderer.contents[0].itemSectionRenderer.contents[0].playlistVideoListRenderer;
@@ -98,9 +102,9 @@ function parseVideosFromJson(videoDataArray: any[]) : YTvideo[] {
 
 async function getAllVideos(ajax_url: string, videos: YTvideo[] = []) : Promise<YTvideo[]> {
     try {
-        let ytAppendData = (await ax.get(baseURL + '/browse_ajax?continuation=' + ajax_url, rqOpts)).data;
-        let contToken: any = ytAppendData[1].response?.onResponseReceivedActions?.[0]?.appendContinuationItemsAction?.continuationItems?.slice(-1)?.[0]?.continuationItemRenderer?.continuationEndpoint?.continuationCommand?.token;
-        videos.push(...parseVideosFromJson(ytAppendData[1].response.onResponseReceivedActions[0].appendContinuationItemsAction.continuationItems));
+        let ytAppendData = (await ax.post(baseURL + '/youtubei/v1/browse?key=' + iAPIkey, {"context":{"client":{"clientName":"WEB","clientVersion":"2.20210401.08.00"}},"continuation":ajax_url}, rqOpts)).data;
+        let contToken: any = ytAppendData.onResponseReceivedActions?.[0]?.appendContinuationItemsAction?.continuationItems?.slice(-1)?.[0]?.continuationItemRenderer?.continuationEndpoint?.continuationCommand?.token;
+        videos.push(...parseVideosFromJson(ytAppendData.onResponseReceivedActions[0].appendContinuationItemsAction.continuationItems));
         return contToken ? await getAllVideos(contToken, videos) : videos;
     } catch {
         throw Error('An error has occured while trying to fetch more videos');
