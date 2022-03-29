@@ -42,7 +42,7 @@ async function fetchFromPlaylist(url: string) : Promise<YTPlaylist> {
         throw Error('Cannot find valid playlist JSON data. Is the playlist ID correct?');
     let listData = ytInitialData.contents.twoColumnBrowseResultsRenderer.tabs[0].tabRenderer.content.sectionListRenderer.contents[0].itemSectionRenderer.contents[0].playlistVideoListRenderer;
     let d = ytInitialData;
-    
+
     let contToken: string = listData?.contents?.slice(-1)?.[0]?.continuationItemRenderer?.continuationEndpoint?.continuationCommand?.token || '';
     if(listData.contents)
         videos.push(...parseVideosFromJson(listData.contents));
@@ -52,7 +52,7 @@ async function fetchFromPlaylist(url: string) : Promise<YTPlaylist> {
     try {
         let mf = d.microformat.microformatDataRenderer;
         let si0 = d.sidebar.playlistSidebarRenderer.items[0].playlistSidebarPrimaryInfoRenderer;
-        let si1 = d.sidebar.playlistSidebarRenderer.items[1].playlistSidebarSecondaryInfoRenderer.videoOwner.videoOwnerRenderer;
+        let si1 = d.sidebar.playlistSidebarRenderer.items[1]?.playlistSidebarSecondaryInfoRenderer.videoOwner.videoOwnerRenderer;
         return {
             title: mf.title,
             url: baseURL + '/playlist?list=' + listData.playlistId,
@@ -62,15 +62,16 @@ async function fetchFromPlaylist(url: string) : Promise<YTPlaylist> {
             description: mf.description,
             isUnlisted: mf.unlisted,
             thumbnail_url: mf.thumbnail.thumbnails.pop().url.replace(/\?.*/, ''),
-            author: {
+            author: si1 ? {
                 name: si1.title.runs[0].text,
                 url: baseURL + si1.title.runs[0].navigationEndpoint.commandMetadata.webCommandMetadata.url,
                 avatar_url: si1.thumbnail.thumbnails.pop().url
-            },
+            } : undefined,
             videos: videos
         }
     } catch(e) {
-        throw Error('Could not parse playlist metadata: ' + e.message);
+        if (e instanceof Error) throw Error('Could not parse playlist metadata: ' + e.message);
+        throw Error('Could not parse playlist metadata');
     }
 }
 

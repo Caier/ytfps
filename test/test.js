@@ -8,7 +8,10 @@ const privatePlaylist = 'PLXJzeXpFb-pA-qXwgH2JdpYIx8lg8y4FW';
 const top500Playlist = 'PLAbeRqyTx1rIGWY13HgPyh0VF0LdoTQFp';
 const myTestList = 'PLXJzeXpFb-pDFQSy6EK7JEFRM1b8I1TTW';
 
+const prophecyTestList = 'OLAK5uy_mPFpBY7OwJ9mFvKxWKzSDJUXNKY9YXjOA';
+
 const properResult = JSON.parse(fs.readFileSync('test/misc/properOutput.json'));
+const prophecyProperResult = JSON.parse(fs.readFileSync('test/misc/prophecyOutput.json'));
 
 describe("ytfps", function() {
     this.timeout(30000);
@@ -26,5 +29,11 @@ describe("ytfps", function() {
 
     it('should throw private playlist error', async () => {
         await expect(ytfps(privatePlaylist)).to.be.rejectedWith('This playlist is private');
+    });
+
+    it('should be able to read nsp list', async () => {
+        let playlist = await ytfps(prophecyTestList);
+        for(let prop in prophecyProperResult)
+            expect(playlist[prop]).to.deep.eq(prophecyProperResult[prop]);
     });
 });

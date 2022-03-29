@@ -7,7 +7,7 @@ export interface YTPlaylist {
     description: string
     isUnlisted: boolean
     thumbnail_url: string
-    author: {
+    author?: {
         name: string
         url: string
         avatar_url: string
