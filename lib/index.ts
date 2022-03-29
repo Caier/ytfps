@@ -61,17 +61,17 @@ async function fetchFromPlaylist(url: string) : Promise<YTPlaylist> {
             view_count: +si0.stats[1]?.simpleText?.replace(/[^0-9]/g, '') || 0,
             description: mf.description,
             isUnlisted: mf.unlisted,
-            thumbnail_url: mf.thumbnail.thumbnails.pop().url.replace(/\?.*/, ''),
-            author: si1 ? {
+            isAlbum: 'albumName' in d.metadata.playlistMetadataRenderer,
+            thumbnail_url: mf.thumbnail.thumbnails.pop().url.replace(/(?:&v=|&days).*/, ''),
+            author: si1 && {
                 name: si1.title.runs[0].text,
                 url: baseURL + si1.title.runs[0].navigationEndpoint.commandMetadata.webCommandMetadata.url,
                 avatar_url: si1.thumbnail.thumbnails.pop().url
-            } : undefined,
+            },
             videos: videos
         }
     } catch(e) {
-        if (e instanceof Error) throw Error('Could not parse playlist metadata: ' + e.message);
-        throw Error('Could not parse playlist metadata');
+        throw Error('Could not parse playlist metadata: ' + (e as Error)?.message);
     }
 }
 

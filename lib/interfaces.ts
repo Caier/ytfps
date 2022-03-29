@@ -6,8 +6,9 @@ export interface YTPlaylist {
     view_count?: number
     description: string
     isUnlisted: boolean
+    isAlbum: boolean
     thumbnail_url: string
-    author?: {
+    author?: { //album playlists contain no author information?
         name: string
         url: string
         avatar_url: string

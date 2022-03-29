@@ -1,7 +1,7 @@
 # ytfps
 ##### **YouTube Full Playlist Scraper**
 
-Tiny module to scrap youtube playlist metadata and its videos (not limited to 100)
+Tiny module to scrap youtube playlist or album metadata and their videos (not limited to 100)
 
 # Install
 

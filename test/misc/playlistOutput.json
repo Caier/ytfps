@@ -5,7 +5,8 @@
   "video_count": 1,
   "description": "this is a test",
   "isUnlisted": true,
-  "thumbnail_url": "https://i.ytimg.com/vi/2chfsFTNEXw/hqdefault.jpg",
+  "isAlbum": false,
+  "thumbnail_url": "https://i.ytimg.com/vi/2chfsFTNEXw/hqdefault.jpg?sqp=-oaymwEXCNACELwBSFryq4qpAwkIARUAAIhCGAE=&rs=AOn4CLCgbp1vCsj3C3W5jOkVBJ-UPPuSlg",
   "author": {
     "name": "アヌス",
     "url": "https://www.youtube.com/user/CairoPl",
