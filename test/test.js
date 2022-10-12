@@ -35,4 +35,14 @@ describe("ytfps", function() {
     it('should throw private playlist error', async () => {
         await expect(ytfps(privatePlaylist)).to.be.rejectedWith('This playlist is private');
     });
+
+    it("should return 12 results", async () => {
+        let res = await ytfps(top500Playlist, { limit: 12 });
+        expect(res.videos.length).to.be.equal(12);
+    });
+
+    it("should return 232 results", async () => {
+        let res = await ytfps(top500Playlist, { limit: 232 });
+        expect(res.videos.length).to.be.equal(232);
+    });
 });

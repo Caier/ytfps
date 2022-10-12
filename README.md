@@ -16,18 +16,28 @@ const ytfps = require('ytfps');
 ytfps('PLAbeRqyTx1rIGWY13HgPyh0VF0LdoTQFp').then(playlist => {
     do_something(playlist);
 }).catch(err => {
-    throw err;
+    handle_error(err);
 });
+
+//you can also pass an YTFPSOptions object to limit the amount of videos you want to scrap:
+let playlist = await ytfps(playlistId, { limit: 13 });
 ```
 
 # API
-    ytfps(id)
+    ytfps(id, opts?);
 
 Scraps the supplied playlist and returns a promise with its metadata.
 
 * `id`
     * youtube playlist's id
     * or youtube playlist's URL
+* `opts`
+    * an optional YTFPSOptions object:
+        ```ts
+        interface YTFPSOptions {
+            limit?: number
+        }
+        ```
 
 * [Example response](https://github.com/Caier/ytfps/blob/master/example/output.json)
 

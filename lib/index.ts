@@ -1,5 +1,5 @@
 import ax, { AxiosRequestConfig } from 'axios';
-import { YTPlaylist, YTvideo } from './interfaces';
+import { YTFPSOptions, YTPlaylist, YTvideo } from './interfaces';
 
 export = fetchFromPlaylist;
 
@@ -17,8 +17,13 @@ let iAPIkey = '';
 /**
  * Scraps youtube playlist metadata and all its videos
  * @param url URL or ID of the playlist you want to scrap
+ * @param opts an optional YTFPSOptions object
  */
-async function fetchFromPlaylist(url: string) : Promise<YTPlaylist> {
+async function fetchFromPlaylist(url: string, opts: YTFPSOptions = {}) : Promise<YTPlaylist> {
+    if(typeof opts.limit != 'undefined' && (typeof opts.limit != 'number' || isNaN(opts.limit) || opts.limit < 0))
+        throw Error("Could not parse the limit option. Make sure it's an integer > 0, Infinity or undefined.");
+
+    opts.limit = opts.limit ?? Infinity;
     let test = /[?&]list=([^#\&\?]+)|^([a-zA-Z0-9-_]+)$/.exec(url);
     if(!test)
         throw Error('Invalid playlist URL or ID');
@@ -45,9 +50,9 @@ async function fetchFromPlaylist(url: string) : Promise<YTPlaylist> {
 
     let contToken: string = listData?.contents?.slice(-1)?.[0]?.continuationItemRenderer?.continuationEndpoint?.continuationCommand?.token || '';
     if(listData.contents)
-        videos.push(...parseVideosFromJson(listData.contents));
-    if(contToken)
-        videos.push(...(await getAllVideos(contToken)));
+        videos.push(...parseVideosFromJson(listData.contents, opts));
+    if(contToken && opts.limit > 0)
+        videos.push(...(await getAllVideos(contToken, opts)));
 
     try {
         let mf = d.microformat.microformatDataRenderer;
@@ -75,11 +80,14 @@ async function fetchFromPlaylist(url: string) : Promise<YTPlaylist> {
     }
 }
 
-function parseVideosFromJson(videoDataArray: any[]) : YTvideo[] {
+function parseVideosFromJson(videoDataArray: any[], opts: YTFPSOptions) : YTvideo[] {
     try {
         let videos: YTvideo[] = [];
-        for(let v of videoDataArray.map(v => v.playlistVideoRenderer))
+        for(const vid of videoDataArray)
             try {
+                if(opts.limit! <= 0)
+                    break;
+                const v = vid.playlistVideoRenderer;
                 videos.push({
                     title: v.title.runs[0].text,
                     url: baseURL + '/watch?v=' + v.videoId,
@@ -91,7 +99,8 @@ function parseVideosFromJson(videoDataArray: any[]) : YTvideo[] {
                         name: v.shortBylineText.runs[0].text,
                         url: baseURL + v.shortBylineText.runs[0].navigationEndpoint.commandMetadata.webCommandMetadata.url
                     }
-            }   );
+                });
+                --opts.limit!;
             } catch {
                 continue;
             }
@@ -101,12 +110,12 @@ function parseVideosFromJson(videoDataArray: any[]) : YTvideo[] {
     }
 }
 
-async function getAllVideos(ajax_url: string, videos: YTvideo[] = []) : Promise<YTvideo[]> {
+async function getAllVideos(ajax_url: string, opts: YTFPSOptions, videos: YTvideo[] = []) : Promise<YTvideo[]> {
     try {
         let ytAppendData = (await ax.post(baseURL + '/youtubei/v1/browse?key=' + iAPIkey, {"context":{"client":{"clientName":"WEB","clientVersion":"2.20210401.08.00"}},"continuation":ajax_url}, rqOpts)).data;
         let contToken: any = ytAppendData.onResponseReceivedActions?.[0]?.appendContinuationItemsAction?.continuationItems?.slice(-1)?.[0]?.continuationItemRenderer?.continuationEndpoint?.continuationCommand?.token;
-        videos.push(...parseVideosFromJson(ytAppendData.onResponseReceivedActions[0].appendContinuationItemsAction.continuationItems));
-        return contToken ? await getAllVideos(contToken, videos) : videos;
+        videos.push(...parseVideosFromJson(ytAppendData.onResponseReceivedActions[0].appendContinuationItemsAction.continuationItems, opts));
+        return (contToken && opts.limit! > 0) ? await getAllVideos(contToken, opts, videos) : videos;
     } catch {
         throw Error('An error has occured while trying to fetch more videos');
     }

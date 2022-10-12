@@ -28,3 +28,7 @@ export interface YTvideo {
         url: string
     }
 }
+
+export interface YTFPSOptions {
+    limit?: number
+}
