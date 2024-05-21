@@ -7,7 +7,7 @@ const expect = chai.expect;
 const privatePlaylist = 'PLXJzeXpFb-pA-qXwgH2JdpYIx8lg8y4FW';
 const top500Playlist = 'PLAbeRqyTx1rIGWY13HgPyh0VF0LdoTQFp';
 const myTestList = 'PLXJzeXpFb-pDFQSy6EK7JEFRM1b8I1TTW';
-const prophecyTestList = 'OLAK5uy_mPFpBY7OwJ9mFvKxWKzSDJUXNKY9YXjOA';
+const cherAlbum = 'OLAK5uy_nh7TvbV7kMyusAwH234qazzYWMSCLQGaw';
 
 const playlistResult = JSON.parse(fs.readFileSync('test/misc/playlistOutput.json'));
 const albumResult = JSON.parse(fs.readFileSync('test/misc/albumOutput.json'));
@@ -23,7 +23,7 @@ describe("ytfps", function() {
     });
 
     it('should return proper results for albums', async () => {
-        let playlist = await ytfps(prophecyTestList);
+        let playlist = await ytfps(cherAlbum);
         for(let prop in albumResult)
             expect(playlist[prop]).to.deep.eq(albumResult[prop]);
     });
