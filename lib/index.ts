@@ -68,7 +68,9 @@ async function fetchFromPlaylist(url: string, opts: YTFPSOptions = {}) : Promise
             isUnlisted: mf.unlisted,
             isAlbum: 'albumName' in d.metadata.playlistMetadataRenderer,
             thumbnail_url: mf.thumbnail.thumbnails.pop().url.replace(/(?:&v=|&days).*/, ''),
-            author: si1 && {
+            author: si1 &&
+                si1.title.runs //some times there is no "runs" key - instead has direct title.simpleText
+                && {
                 name: si1.title.runs[0].text,
                 url: baseURL + si1.title.runs[0].navigationEndpoint.commandMetadata.webCommandMetadata.url,
                 avatar_url: si1.thumbnail.thumbnails.pop().url
